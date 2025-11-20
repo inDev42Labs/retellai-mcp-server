@@ -188,8 +188,8 @@ export const CreateAgentInputSchema = z.object({
       "eleven_turbo_v2_5",
       "eleven_flash_v2_5",
       "eleven_multilingual_v2",
-      "Play3.0-mini",
-      "PlayDialog",
+      "tts-1",
+      "gpt-4o-mini-tts",
     ])
     .optional(),
   // fallback_voice_ids: z.array(z.string()).optional(),
@@ -805,4 +805,478 @@ export const RetellLLMOutputSchema = z.object({
   default_dynamic_variables: z.record(z.string()).nullable().optional(),
   knowledge_base_ids: z.array(z.string()).nullable().optional(),
   last_modification_timestamp: z.number(),
+});
+
+// ===== Conversation Flow Schemas =====
+
+// Model Choice Schema
+const ModelChoiceCascadingSchema = z.object({
+  type: z.literal("cascading"),
+  model: z.enum([
+    "gpt-5",
+    "gpt-5-mini",
+    "gpt-5-nano",
+    "gpt-4o",
+    "gpt-4o-mini",
+    "gpt-4.1",
+    "gpt-4.1-mini",
+    "gpt-4.1-nano",
+    "claude-3.7-sonnet",
+    "claude-3.5-haiku",
+    "gemini-2.0-flash",
+    "gemini-2.0-flash-lite",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+  ]),
+  high_priority: z.boolean().optional(),
+});
+
+const ModelChoiceSchema = z.discriminatedUnion("type", [
+  ModelChoiceCascadingSchema,
+]);
+
+// Tool Parameter Schema
+const ToolParameterSchema = z.object({
+  type: z.literal("object"),
+  properties: z.record(z.any()),
+  required: z.array(z.string()).optional(),
+});
+
+// Custom Tool Schema
+const ConversationFlowCustomToolSchema = z.object({
+  type: z.literal("custom"),
+  name: z.string(),
+  description: z.string().optional(),
+  parameters: ToolParameterSchema.optional(),
+  url: z.string(),
+  headers: z.record(z.string()).optional(),
+  method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]).optional(),
+  timeout_ms: z.number().min(1000).max(600000).optional(),
+  query_params: z.record(z.string()).optional(),
+  response_variables: z.record(z.string()).optional(),
+  tool_id: z.string(),
+});
+
+// Cal.com Tool Schemas
+const CheckAvailabilityCalToolSchema = z.object({
+  type: z.literal("check_availability_cal"),
+  name: z.string(),
+  description: z.string().optional(),
+  cal_api_key: z.string(),
+  event_type_id: z.number(),
+  timezone: z.string().optional(),
+  tool_id: z.string(),
+});
+
+const BookAppointmentCalToolSchema = z.object({
+  type: z.literal("book_appointment_cal"),
+  name: z.string(),
+  description: z.string().optional(),
+  cal_api_key: z.string(),
+  event_type_id: z.number(),
+  timezone: z.string().optional(),
+  tool_id: z.string(),
+});
+
+// Node Tool Schema
+const NodeToolSchema = z.discriminatedUnion("type", [
+  ConversationFlowCustomToolSchema,
+  CheckAvailabilityCalToolSchema,
+  BookAppointmentCalToolSchema,
+]);
+
+// Node Instruction Schemas
+const NodeInstructionPromptSchema = z.object({
+  type: z.literal("prompt"),
+  text: z.string(),
+});
+
+const NodeInstructionStaticTextSchema = z.object({
+  type: z.literal("static_text"),
+  text: z.string(),
+});
+
+const NodeInstructionSchema = z.discriminatedUnion("type", [
+  NodeInstructionPromptSchema,
+  NodeInstructionStaticTextSchema,
+]);
+
+// Edge Condition Schemas
+const PromptConditionSchema = z.object({
+  type: z.literal("prompt"),
+  prompt: z.string(),
+});
+
+const EquationSchema = z.object({
+  left: z.string(),
+  operator: z.enum([
+    "==",
+    "!=",
+    ">",
+    ">=",
+    "<",
+    "<=",
+    "contains",
+    "not_contains",
+    "exists",
+    "not_exist",
+  ]),
+  right: z.string().optional(),
+});
+
+const EquationConditionSchema = z.object({
+  type: z.literal("equation"),
+  equations: z.array(EquationSchema).max(50),
+  operator: z.enum(["||", "&&"]),
+});
+
+const NodeEdgeSchema = z.object({
+  id: z.string(),
+  transition_condition: z.discriminatedUnion("type", [
+    PromptConditionSchema,
+    EquationConditionSchema,
+  ]),
+  destination_node_id: z.string().optional(),
+});
+
+// Node Base Schema
+const NodeBaseSchema = z.object({
+  id: z.string(),
+  name: z.string().optional(),
+  display_position: z
+    .object({
+      x: z.number(),
+      y: z.number(),
+    })
+    .optional(),
+});
+
+// Conversation Node Schema
+const ConversationNodeSchema = z.object({
+  ...NodeBaseSchema.shape,
+  type: z.literal("conversation"),
+  instruction: NodeInstructionSchema,
+  edges: z.array(NodeEdgeSchema).optional(),
+  model_choice: ModelChoiceSchema.optional(),
+  interruption_sensitivity: z.number().min(0).max(1).optional(),
+  knowledge_base_ids: z.array(z.string()).optional(),
+});
+
+// End Node Schema
+const EndNodeSchema = z.object({
+  ...NodeBaseSchema.shape,
+  type: z.literal("end"),
+});
+
+// Function Node Schema
+const FunctionNodeSchema = z.object({
+  ...NodeBaseSchema.shape,
+  type: z.literal("function"),
+  tool_id: z.string(),
+  tool_type: z.enum(["local", "shared"]),
+  wait_for_result: z.boolean(),
+  instruction: NodeInstructionSchema.optional(),
+  edges: z.array(NodeEdgeSchema).optional(),
+  model_choice: ModelChoiceSchema.optional(),
+  interruption_sensitivity: z.number().min(0).max(1).optional(),
+  speak_during_execution: z.boolean().optional(),
+});
+
+// Transfer Call Node Schema
+const TransferDestinationPredefinedSchema = z.object({
+  type: z.literal("predefined"),
+  number: z.string(),
+  extension: z.string().optional(),
+});
+
+const TransferDestinationInferredSchema = z.object({
+  type: z.literal("inferred"),
+  prompt: z.string(),
+});
+
+const TransferDestinationSchema = z.discriminatedUnion("type", [
+  TransferDestinationPredefinedSchema,
+  TransferDestinationInferredSchema,
+]);
+
+const TransferOptionColdTransferSchema = z.object({
+  type: z.literal("cold_transfer"),
+  show_transferee_as_caller: z.boolean().optional(),
+});
+
+const TransferOptionWarmTransferSchema = z.object({
+  type: z.literal("warm_transfer"),
+  show_transferee_as_caller: z.boolean().optional(),
+  agent_detection_timeout_ms: z.number().optional(),
+  on_hold_music: z
+    .enum(["none", "relaxing_sound", "uplifting_beats", "ringtone"])
+    .optional(),
+  public_handoff_option: z.any().optional(),
+  private_handoff_option: z.any().optional(),
+  ivr_option: z.any().optional(),
+  opt_out_human_detection: z.boolean().optional(),
+  opt_out_initial_message: z.boolean().optional(),
+});
+
+const TransferOptionSchema = z.discriminatedUnion("type", [
+  TransferOptionColdTransferSchema,
+  TransferOptionWarmTransferSchema,
+]);
+
+const TransferCallNodeSchema = z.object({
+  ...NodeBaseSchema.shape,
+  type: z.literal("transfer_call"),
+  transfer_destination: TransferDestinationSchema,
+  transfer_option: TransferOptionSchema,
+  edge: NodeEdgeSchema,
+  model_choice: ModelChoiceSchema.optional(),
+  ignore_e164_validation: z.boolean().optional(),
+  custom_sip_headers: z.record(z.string()).optional(),
+});
+
+// Press Digit Node Schema
+const PressDigitNodeSchema = z.object({
+  ...NodeBaseSchema.shape,
+  type: z.literal("press_digit"),
+  instruction: NodeInstructionPromptSchema,
+  delay_ms: z.number().optional(),
+  edges: z.array(NodeEdgeSchema).optional(),
+  model_choice: ModelChoiceSchema.optional(),
+});
+
+// Branch Node Schema
+const ElseEdgeSchema = z.object({
+  ...NodeEdgeSchema.shape,
+  transition_condition: z.object({
+    type: z.literal("prompt"),
+    prompt: z.literal("Else"),
+  }),
+});
+
+const BranchNodeSchema = z.object({
+  ...NodeBaseSchema.shape,
+  type: z.literal("branch"),
+  edges: z.array(NodeEdgeSchema).optional(),
+  else_edge: ElseEdgeSchema,
+});
+
+// SMS Node Schema
+const SmsSuccessEdgeSchema = z.object({
+  ...NodeEdgeSchema.shape,
+  transition_condition: z.object({
+    type: z.literal("prompt"),
+    prompt: z.literal("Sent successfully"),
+  }),
+});
+
+const SmsFailedEdgeSchema = z.object({
+  ...NodeEdgeSchema.shape,
+  transition_condition: z.object({
+    type: z.literal("prompt"),
+    prompt: z.literal("Failed to send"),
+  }),
+});
+
+const SmsNodeSchema = z.object({
+  ...NodeBaseSchema.shape,
+  type: z.literal("sms"),
+  instruction: NodeInstructionSchema,
+  success_edge: SmsSuccessEdgeSchema,
+  failed_edge: SmsFailedEdgeSchema,
+});
+
+// Extract Dynamic Variables Node Schema
+const ConversationFlowStringAnalysisDataSchema = z.object({
+  type: z.literal("string"),
+  name: z.string(),
+  description: z.string(),
+  examples: z.array(z.string()).optional(),
+});
+
+const ConversationFlowEnumAnalysisDataSchema = z.object({
+  type: z.literal("enum"),
+  name: z.string(),
+  description: z.string(),
+  choices: z.array(z.string()),
+  examples: z.array(z.string()).optional(),
+});
+
+const ConversationFlowBooleanAnalysisDataSchema = z.object({
+  type: z.literal("boolean"),
+  name: z.string(),
+  description: z.string(),
+  examples: z.array(z.string()).optional(),
+});
+
+const ConversationFlowNumberAnalysisDataSchema = z.object({
+  type: z.literal("number"),
+  name: z.string(),
+  description: z.string(),
+  examples: z.array(z.string()).optional(),
+});
+
+const ConversationFlowAnalysisDataSchema = z.discriminatedUnion("type", [
+  ConversationFlowStringAnalysisDataSchema,
+  ConversationFlowEnumAnalysisDataSchema,
+  ConversationFlowBooleanAnalysisDataSchema,
+  ConversationFlowNumberAnalysisDataSchema,
+]);
+
+const ExtractDynamicVariablesNodeSchema = z.object({
+  ...NodeBaseSchema.shape,
+  type: z.literal("extract_dynamic_variables"),
+  variables: z.array(ConversationFlowAnalysisDataSchema),
+  edges: z.array(NodeEdgeSchema).optional(),
+  model_choice: ModelChoiceSchema.optional(),
+});
+
+// Agent Swap Node Schema
+const AgentSwapNodeSchema = z.object({
+  ...NodeBaseSchema.shape,
+  type: z.literal("agent_swap"),
+  agent_id: z.string(),
+  agent_version: z.number().optional(),
+  post_call_analysis_setting: z.enum(["both_agents", "only_destination_agent"]),
+  webhook_setting: z
+    .enum(["both_agents", "only_destination_agent", "only_source_agent"])
+    .optional(),
+  edge: NodeEdgeSchema,
+});
+
+// MCP Node Schema
+const MCPNodeSchema = z.object({
+  ...NodeBaseSchema.shape,
+  type: z.literal("mcp"),
+  mcp_id: z.string(),
+  mcp_tool_name: z.string(),
+  wait_for_result: z.boolean(),
+  edges: z.array(NodeEdgeSchema).optional(),
+  response_variables: z.record(z.string()).optional(),
+  speak_during_execution: z.boolean().optional(),
+  instruction: NodeInstructionSchema.optional(),
+  interruption_sensitivity: z.number().min(0).max(1).optional(),
+});
+
+// Component Node Schema
+const ComponentNodeSchema = z.object({
+  ...NodeBaseSchema.shape,
+  type: z.literal("component"),
+  component_id: z.string(),
+  component_type: z.enum(["local", "shared"]),
+  edges: z.array(NodeEdgeSchema).optional(),
+  else_edge: ElseEdgeSchema,
+});
+
+// Conversation Flow Node Schema (union of all node types)
+const ConversationFlowNodeSchema = z.discriminatedUnion("type", [
+  ConversationNodeSchema,
+  EndNodeSchema,
+  FunctionNodeSchema,
+  TransferCallNodeSchema,
+  PressDigitNodeSchema,
+  BranchNodeSchema,
+  SmsNodeSchema,
+  ExtractDynamicVariablesNodeSchema,
+  AgentSwapNodeSchema,
+  MCPNodeSchema,
+  ComponentNodeSchema,
+]);
+
+// MCP Configuration Schema
+const MCPSchema = z.object({
+  name: z.string(),
+  url: z.string(),
+  headers: z.record(z.string()).optional(),
+  query_params: z.record(z.string()).optional(),
+  timeout_ms: z.number().optional(),
+});
+
+// KB Config Schema
+const KBConfigSchema = z.object({
+  top_k: z.number().min(1).max(10).optional(),
+  filter_score: z.number().min(0).max(1).optional(),
+});
+
+// Conversation Flow Component Schema
+const ConversationFlowComponentSchema = z.object({
+  name: z.string(),
+  tools: z.array(NodeToolSchema).optional(),
+  nodes: z.array(ConversationFlowNodeSchema),
+  start_node_id: z.string().optional(),
+  begin_tag_display_position: z
+    .object({
+      x: z.number(),
+      y: z.number(),
+    })
+    .optional(),
+});
+
+// Get Conversation Flow Input Schema
+export const GetConversationFlowInputSchema = z.object({
+  conversationFlowId: z
+    .string()
+    .describe("The ID of conversation flow to retrieve"),
+  version: z
+    .string()
+    .optional()
+    .describe("Version of conversation flow to retrieve"),
+});
+
+// Update Conversation Flow Input Schema
+export const UpdateConversationFlowInputSchema = z.object({
+  conversationFlowId: z
+    .string()
+    .describe("The ID of conversation flow to update"),
+  version: z
+    .string()
+    .optional()
+    .describe("Version of conversation flow to update"),
+  model_choice: ModelChoiceSchema.optional(),
+  model_temperature: z.number().min(0).max(1).optional(),
+  tool_call_strict_mode: z.boolean().optional(),
+  knowledge_base_ids: z.array(z.string()).optional(),
+  kb_config: KBConfigSchema.optional(),
+  start_speaker: z.enum(["user", "agent"]).optional(),
+  begin_after_user_silence_ms: z.number().optional(),
+  global_prompt: z.string().optional(),
+  tools: z.array(NodeToolSchema).optional(),
+  components: z.array(ConversationFlowComponentSchema).optional(),
+  start_node_id: z.string().optional(),
+  default_dynamic_variables: z.record(z.string()).optional(),
+  begin_tag_display_position: z
+    .object({
+      x: z.number(),
+      y: z.number(),
+    })
+    .optional(),
+  mcps: z.array(MCPSchema).optional(),
+  is_transfer_llm: z.boolean().optional(),
+  nodes: z.array(ConversationFlowNodeSchema).optional(),
+});
+
+// Conversation Flow Output Schema
+export const ConversationFlowOutputSchema = z.object({
+  conversation_flow_id: z.string(),
+  version: z.number(),
+  model_choice: ModelChoiceSchema.optional(),
+  model_temperature: z.number().optional(),
+  tool_call_strict_mode: z.boolean().optional(),
+  knowledge_base_ids: z.array(z.string()).optional(),
+  kb_config: KBConfigSchema.optional(),
+  start_speaker: z.enum(["user", "agent"]).optional(),
+  begin_after_user_silence_ms: z.number().optional(),
+  global_prompt: z.string().optional(),
+  tools: z.array(NodeToolSchema).optional(),
+  components: z.array(ConversationFlowComponentSchema).optional(),
+  start_node_id: z.string().optional(),
+  default_dynamic_variables: z.record(z.string()).optional(),
+  begin_tag_display_position: z
+    .object({
+      x: z.number(),
+      y: z.number(),
+    })
+    .optional(),
+  mcps: z.array(MCPSchema).optional(),
+  is_transfer_llm: z.boolean().optional(),
+  nodes: z.array(ConversationFlowNodeSchema).optional(),
 });

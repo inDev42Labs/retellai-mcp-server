@@ -1,16 +1,19 @@
 import type { z } from "zod";
 import type {
   AgentOutputSchema,
+  ConversationFlowOutputSchema,
   CreateAgentInputSchema,
   CreatePhoneCallInputSchema,
   CreateRetellLLMInputSchema,
   CreateWebCallInputSchema,
+  // GetConversationFlowInputSchema,
   KnowledgeBaseOutputSchema,
   ListCallsInputSchema,
   PhoneNumberOutputSchema,
   RetellLLMOutputSchema,
   UpdateAgentInputSchema,
   UpdateCallInputSchema,
+  UpdateConversationFlowInputSchema,
   UpdateRetellLLMInputSchema,
   VoiceOutputSchema,
 } from "../schemas/index";
@@ -370,5 +373,68 @@ export function transformRetellLLMOutput(
     default_dynamic_variables: llm.default_dynamic_variables,
     knowledge_base_ids: llm.knowledge_base_ids,
     last_modification_timestamp: llm.last_modification_timestamp,
+  };
+}
+
+// ===== Conversation Flow Transformers =====
+
+export function transformUpdateConversationFlowInput(
+  input: z.infer<typeof UpdateConversationFlowInputSchema>,
+) {
+  const updateData: any = {};
+
+  if (input.model_choice !== undefined)
+    updateData.model_choice = input.model_choice;
+  if (input.model_temperature !== undefined)
+    updateData.model_temperature = input.model_temperature;
+  if (input.tool_call_strict_mode !== undefined)
+    updateData.tool_call_strict_mode = input.tool_call_strict_mode;
+  if (input.knowledge_base_ids !== undefined)
+    updateData.knowledge_base_ids = input.knowledge_base_ids;
+  if (input.kb_config !== undefined) updateData.kb_config = input.kb_config;
+  if (input.start_speaker !== undefined)
+    updateData.start_speaker = input.start_speaker;
+  if (input.begin_after_user_silence_ms !== undefined)
+    updateData.begin_after_user_silence_ms = input.begin_after_user_silence_ms;
+  if (input.global_prompt !== undefined)
+    updateData.global_prompt = input.global_prompt;
+  if (input.tools !== undefined) updateData.tools = input.tools;
+  if (input.components !== undefined) updateData.components = input.components;
+  if (input.start_node_id !== undefined)
+    updateData.start_node_id = input.start_node_id;
+  if (input.default_dynamic_variables !== undefined)
+    updateData.default_dynamic_variables = input.default_dynamic_variables;
+  if (input.begin_tag_display_position !== undefined)
+    updateData.begin_tag_display_position = input.begin_tag_display_position;
+  if (input.mcps !== undefined) updateData.mcps = input.mcps;
+  if (input.is_transfer_llm !== undefined)
+    updateData.is_transfer_llm = input.is_transfer_llm;
+  if (input.nodes !== undefined) updateData.nodes = input.nodes;
+
+  return updateData;
+}
+
+export function transformConversationFlowOutput(
+  conversationFlow: any,
+): z.infer<typeof ConversationFlowOutputSchema> {
+  return {
+    conversation_flow_id: conversationFlow.conversation_flow_id,
+    version: conversationFlow.version,
+    model_choice: conversationFlow.model_choice,
+    model_temperature: conversationFlow.model_temperature,
+    tool_call_strict_mode: conversationFlow.tool_call_strict_mode,
+    knowledge_base_ids: conversationFlow.knowledge_base_ids,
+    kb_config: conversationFlow.kb_config,
+    start_speaker: conversationFlow.start_speaker,
+    begin_after_user_silence_ms: conversationFlow.begin_after_user_silence_ms,
+    global_prompt: conversationFlow.global_prompt,
+    tools: conversationFlow.tools,
+    components: conversationFlow.components,
+    start_node_id: conversationFlow.start_node_id,
+    default_dynamic_variables: conversationFlow.default_dynamic_variables,
+    begin_tag_display_position: conversationFlow.begin_tag_display_position,
+    mcps: conversationFlow.mcps,
+    is_transfer_llm: conversationFlow.is_transfer_llm,
+    nodes: conversationFlow.nodes,
   };
 }

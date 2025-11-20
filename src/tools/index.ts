@@ -3,6 +3,7 @@ import type Retell from "retell-sdk";
 import { registerAgentTools } from "./agent";
 // import { registerCallTools } from "./call";
 // import { registerPhoneNumberTools } from "./phone-number";
+import { registerConversationFlowTools } from "./conversation-flow";
 import { registerRetellLLMTools } from "./retell-llm";
 // import { registerKnowledgeBaseTools } from "./knowledge-base";
 import { registerVoiceTools } from "./voice";
@@ -14,4 +15,5 @@ export const registerAllTools = (server: McpServer, retellClient: Retell) => {
   // registerKnowledgeBaseTools(server, retellClient);
   registerVoiceTools(server, retellClient);
   registerRetellLLMTools(server, retellClient);
+  registerConversationFlowTools(server, retellClient);
 };
