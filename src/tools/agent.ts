@@ -78,23 +78,23 @@ export const registerAgentTools = (server: McpServer, retellClient: Retell) => {
     }),
   );
 
-  server.tool(
-    "delete_agent",
-    "Deletes a Retell agent",
-    GetAgentInputSchema.shape,
-    createToolHandler(async (data) => {
-      try {
-        await retellClient.agent.delete(data.agentId);
-        return {
-          success: true,
-          message: `Agent ${data.agentId} deleted successfully`,
-        };
-      } catch (error: any) {
-        console.error(`Error deleting agent: ${error.message}`);
-        throw error;
-      }
-    }),
-  );
+  // server.tool(
+  //   "delete_agent",
+  //   "Deletes a Retell agent",
+  //   GetAgentInputSchema.shape,
+  //   createToolHandler(async (data) => {
+  //     try {
+  //       await retellClient.agent.delete(data.agentId);
+  //       return {
+  //         success: true,
+  //         message: `Agent ${data.agentId} deleted successfully`,
+  //       };
+  //     } catch (error: any) {
+  //       console.error(`Error deleting agent: ${error.message}`);
+  //       throw error;
+  //     }
+  //   }),
+  // );
 
   server.tool(
     "get_agent_versions",
