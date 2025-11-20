@@ -2,8 +2,8 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { registerAllTools } from "./tools/index.js";
-import { createRetellClient } from "./client.js";
+import { registerAllTools } from "./tools/index";
+import { createRetellClient } from "./client";
 
 import dotenv from "dotenv";
 dotenv.config();

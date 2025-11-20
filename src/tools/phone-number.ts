@@ -5,9 +5,9 @@ import {
   CreatePhoneNumberInputSchema,
   GetPhoneNumberInputSchema,
   UpdatePhoneNumberInputSchema,
-} from "../schemas/index.js";
-import { transformPhoneNumberOutput } from "../transformers/index.js";
-import { createToolHandler } from "./utils.js";
+} from "../schemas/index";
+import { transformPhoneNumberOutput } from "../transformers/index";
+import { createToolHandler } from "./utils";
 
 export const registerPhoneNumberTools = (
   server: McpServer,

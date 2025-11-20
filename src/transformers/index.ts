@@ -14,7 +14,7 @@ import {
   RetellLLMOutputSchema,
   ListCallsInputSchema,
   UpdateCallInputSchema,
-} from "../schemas/index.js";
+} from "../schemas/index";
 
 // ===== Call Transformers =====
 

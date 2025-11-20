@@ -5,13 +5,13 @@ import {
   CreateAgentInputSchema,
   GetAgentInputSchema,
   UpdateAgentInputSchema,
-} from "../schemas/index.js";
+} from "../schemas/index";
 import {
   transformAgentInput,
   transformAgentOutput,
   transformUpdateAgentInput,
-} from "../transformers/index.js";
-import { createToolHandler } from "./utils.js";
+} from "../transformers/index";
+import { createToolHandler } from "./utils";
 
 export const registerAgentTools = (server: McpServer, retellClient: Retell) => {
   server.tool(

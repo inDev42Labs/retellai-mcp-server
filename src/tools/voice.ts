@@ -1,9 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import Retell from "retell-sdk";
 
-import { GetVoiceInputSchema } from "../schemas/index.js";
-import { transformVoiceOutput } from "../transformers/index.js";
-import { createToolHandler } from "./utils.js";
+import { GetVoiceInputSchema } from "../schemas/index";
+import { transformVoiceOutput } from "../transformers/index";
+import { createToolHandler } from "./utils";
 
 export const registerVoiceTools = (server: McpServer, retellClient: Retell) => {
   server.tool(

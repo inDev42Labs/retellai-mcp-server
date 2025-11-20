@@ -8,15 +8,15 @@ import {
   ListCallsInputSchema,
   UpdateCallInputSchema,
   DeleteCallInputSchema,
-} from "../schemas/index.js";
+} from "../schemas/index";
 import {
   transformPhoneCallInput,
   transformWebCallInput,
   transformCallOutput,
   transformListCallsInput,
   transformUpdateCallInput,
-} from "../transformers/index.js";
-import { createToolHandler } from "./utils.js";
+} from "../transformers/index";
+import { createToolHandler } from "./utils";
 
 export const registerCallTools = (server: McpServer, retellClient: Retell) => {
   server.tool(

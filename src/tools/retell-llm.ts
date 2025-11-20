@@ -5,13 +5,13 @@ import {
   CreateRetellLLMInputSchema,
   GetRetellLLMInputSchema,
   UpdateRetellLLMInputSchema,
-} from "../schemas/index.js";
+} from "../schemas/index";
 import {
   transformRetellLLMInput,
   transformUpdateRetellLLMInput,
   transformRetellLLMOutput,
-} from "../transformers/index.js";
-import { createToolHandler } from "./utils.js";
+} from "../transformers/index";
+import { createToolHandler } from "./utils";
 
 export const registerRetellLLMTools = (
   server: McpServer,
