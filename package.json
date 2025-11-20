@@ -1,7 +1,6 @@
 {
   "name": "retellai-mcp-server",
   "version": "1.0.2",
-  "type": "module",
   "main": "build/index.js",
   "scripts": {
     "build": "tsc && chmod 755 build/index.js",
@@ -24,6 +23,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
+    "@types/node": "^24.10.1",
     "typescript": "^5.0.0"
   }
 }
