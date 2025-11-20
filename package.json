@@ -4,10 +4,9 @@
   "type": "module",
   "main": "build/index.js",
   "scripts": {
-    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
-    "prepare": "npm run build",
+    "build": "tsc",
     "watch": "tsc --watch",
-    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+    "inspector": "bunx @modelcontextprotocol/inspector build/index.js"
   },
   "keywords": [],
   "author": "abhaybabbar",
