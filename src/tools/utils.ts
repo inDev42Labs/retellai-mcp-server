@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 export type ToolResponse = {
   content: Array<{ type: "text"; text: string }>;
 };
@@ -28,7 +26,7 @@ export function createErrorResponse(error: any): ToolResponse {
 }
 
 export function createToolHandler<T>(
-  handler: (data: T) => Promise<any>
+  handler: (data: T) => Promise<any>,
 ): (data: T) => Promise<ToolResponse> {
   return async (data: T) => {
     try {

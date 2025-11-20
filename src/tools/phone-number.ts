@@ -1,5 +1,5 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import Retell from "retell-sdk";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type Retell from "retell-sdk";
 
 import {
   CreatePhoneNumberInputSchema,
@@ -11,7 +11,7 @@ import { createToolHandler } from "./utils";
 
 export const registerPhoneNumberTools = (
   server: McpServer,
-  retellClient: Retell
+  retellClient: Retell,
 ) => {
   server.tool(
     "list_phone_numbers",
@@ -20,7 +20,7 @@ export const registerPhoneNumberTools = (
     createToolHandler(async () => {
       const phoneNumbers = await retellClient.phoneNumber.list();
       return phoneNumbers.map(transformPhoneNumberOutput);
-    })
+    }),
   );
 
   server.tool(
@@ -35,11 +35,10 @@ export const registerPhoneNumberTools = (
         nickname: data.nickname,
         inbound_webhook_url: data.inboundWebhookUrl,
       };
-      const phoneNumber = await retellClient.phoneNumber.create(
-        createPhoneNumberDto
-      );
+      const phoneNumber =
+        await retellClient.phoneNumber.create(createPhoneNumberDto);
       return transformPhoneNumberOutput(phoneNumber);
-    })
+    }),
   );
 
   server.tool(
@@ -48,10 +47,10 @@ export const registerPhoneNumberTools = (
     GetPhoneNumberInputSchema.shape,
     createToolHandler(async (data) => {
       const phoneNumber = await retellClient.phoneNumber.retrieve(
-        data.phoneNumber
+        data.phoneNumber,
       );
       return transformPhoneNumberOutput(phoneNumber);
-    })
+    }),
   );
 
   server.tool(
@@ -67,10 +66,10 @@ export const registerPhoneNumberTools = (
       };
       const phoneNumber = await retellClient.phoneNumber.update(
         data.phoneNumber,
-        updatePhoneNumberDto
+        updatePhoneNumberDto,
       );
       return transformPhoneNumberOutput(phoneNumber);
-    })
+    }),
   );
 
   server.tool(
@@ -83,6 +82,6 @@ export const registerPhoneNumberTools = (
         success: true,
         message: `Phone number ${data.phoneNumber} deleted successfully`,
       };
-    })
+    }),
   );
 };

@@ -1,20 +1,20 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import Retell from "retell-sdk";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type Retell from "retell-sdk";
 
 import {
   CreatePhoneCallInputSchema,
   CreateWebCallInputSchema,
+  DeleteCallInputSchema,
   GetCallInputSchema,
   ListCallsInputSchema,
   UpdateCallInputSchema,
-  DeleteCallInputSchema,
 } from "../schemas/index";
 import {
-  transformPhoneCallInput,
-  transformWebCallInput,
   transformCallOutput,
   transformListCallsInput,
+  transformPhoneCallInput,
   transformUpdateCallInput,
+  transformWebCallInput,
 } from "../transformers/index";
 import { createToolHandler } from "./utils";
 
@@ -27,7 +27,7 @@ export const registerCallTools = (server: McpServer, retellClient: Retell) => {
       const createCallDto = transformPhoneCallInput(data);
       const call = await retellClient.call.createPhoneCall(createCallDto);
       return transformCallOutput(call);
-    })
+    }),
   );
 
   server.tool(
@@ -38,7 +38,7 @@ export const registerCallTools = (server: McpServer, retellClient: Retell) => {
       const createCallDto = transformWebCallInput(data);
       const call = await retellClient.call.createWebCall(createCallDto);
       return transformCallOutput(call);
-    })
+    }),
   );
 
   server.tool(
@@ -56,7 +56,7 @@ export const registerCallTools = (server: McpServer, retellClient: Retell) => {
         console.error(`Error getting call: ${error.message}`);
         throw error;
       }
-    })
+    }),
   );
 
   server.tool(
@@ -72,7 +72,7 @@ export const registerCallTools = (server: McpServer, retellClient: Retell) => {
         console.error(`Error listing calls: ${error.message}`);
         throw error;
       }
-    })
+    }),
   );
 
   server.tool(
@@ -85,14 +85,14 @@ export const registerCallTools = (server: McpServer, retellClient: Retell) => {
         const updateCallDto = transformUpdateCallInput(data);
         const updatedCall = await retellClient.call.update(
           callId,
-          updateCallDto
+          updateCallDto,
         );
         return transformCallOutput(updatedCall);
       } catch (error: any) {
         console.error(`Error updating call: ${error.message}`);
         throw error;
       }
-    })
+    }),
   );
 
   server.tool(
@@ -110,6 +110,6 @@ export const registerCallTools = (server: McpServer, retellClient: Retell) => {
         console.error(`Error deleting call: ${error.message}`);
         throw error;
       }
-    })
+    }),
   );
 };

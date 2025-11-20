@@ -1,5 +1,5 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import Retell from "retell-sdk";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type Retell from "retell-sdk";
 
 import {
   CreateRetellLLMInputSchema,
@@ -8,14 +8,14 @@ import {
 } from "../schemas/index";
 import {
   transformRetellLLMInput,
-  transformUpdateRetellLLMInput,
   transformRetellLLMOutput,
+  transformUpdateRetellLLMInput,
 } from "../transformers/index";
 import { createToolHandler } from "./utils";
 
 export const registerRetellLLMTools = (
   server: McpServer,
-  retellClient: Retell
+  retellClient: Retell,
 ) => {
   server.tool(
     "list_retell_llms",
@@ -24,7 +24,7 @@ export const registerRetellLLMTools = (
     createToolHandler(async () => {
       const llms = await retellClient.llm.list();
       return llms.map(transformRetellLLMOutput);
-    })
+    }),
   );
 
   server.tool(
@@ -35,7 +35,7 @@ export const registerRetellLLMTools = (
       const createLLMDto = transformRetellLLMInput(data);
       const llm = await retellClient.llm.create(createLLMDto);
       return transformRetellLLMOutput(llm);
-    })
+    }),
   );
 
   server.tool(
@@ -53,7 +53,7 @@ export const registerRetellLLMTools = (
         console.error(`Error getting Retell LLM: ${error.message}`);
         throw error;
       }
-    })
+    }),
   );
 
   server.tool(
@@ -70,7 +70,7 @@ export const registerRetellLLMTools = (
         console.error(`Error updating Retell LLM: ${error.message}`);
         throw error;
       }
-    })
+    }),
   );
 
   server.tool(
@@ -88,6 +88,6 @@ export const registerRetellLLMTools = (
         console.error(`Error deleting Retell LLM: ${error.message}`);
         throw error;
       }
-    })
+    }),
   );
 };

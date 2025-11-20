@@ -27,13 +27,13 @@ export const CreatePhoneCallInputSchema = z.object({
     .string()
     .optional()
     .describe(
-      "For this particular call, override the agent used with this agent id"
+      "For this particular call, override the agent used with this agent id",
     ),
   overrideAgentVersion: z
     .number()
     .optional()
     .describe(
-      "For this particular call, override the agent version used with this version"
+      "For this particular call, override the agent version used with this version",
     ),
   direction: z.enum(["inbound", "outbound"]).default("outbound"),
   metadata: z.record(z.string()).optional(),
@@ -93,7 +93,7 @@ export const CallOutputSchema = z.object({
           product: z.string(),
           unitPrice: z.number(),
           cost: z.number(),
-        })
+        }),
       ),
       total_duration_seconds: z.number(),
       total_duration_unit_price: z.number(),
@@ -175,7 +175,7 @@ export const CreateAgentInputSchema = z.object({
     llm_id: z
       .string()
       .describe(
-        "ID of the Retell LLM Response Engine, if llm_id not mentioned by user, create a new one"
+        "ID of the Retell LLM Response Engine, if llm_id not mentioned by user, create a new one",
       ),
     version: z.number().optional(),
   }),
@@ -304,7 +304,7 @@ export const UpdateAgentInputSchema = z.object({
         word: z.string(),
         alphabet: z.enum(["ipa", "cmu"]),
         phoneme: z.string(),
-      })
+      }),
     )
     .optional(),
   normalize_for_speech: z.boolean().optional(),
@@ -356,7 +356,7 @@ export const AgentOutputSchema = z.object({
         word: z.string(),
         alphabet: z.enum(["ipa", "cmu"]),
         phoneme: z.string(),
-      })
+      }),
     )
     .optional(),
   normalize_for_speech: z.boolean().optional(),
@@ -459,7 +459,7 @@ export const KnowledgeBaseOutputSchema = z.object({
         source_type: z.string(),
         status: z.string(),
         created_at: z.number(),
-      })
+      }),
     )
     .optional(),
 });
@@ -482,35 +482,35 @@ export const CreateRetellLLMInputSchema = z.object({
     ])
     .optional()
     .describe(
-      "Select the underlying text LLM. If not set, would default to gpt-4o"
+      "Select the underlying text LLM. If not set, would default to gpt-4o",
     ),
   s2s_model: z
     .enum(["gpt-4o-realtime", "gpt-4o-mini-realtime"])
     .optional()
     .describe(
-      "Select the underlying speech to speech model. Can only set this or model, not both"
+      "Select the underlying speech to speech model. Can only set this or model, not both",
     ),
   model_temperature: z
     .number()
     .optional()
     .describe(
-      "If set, will control the randomness of the response. Value ranging from [0,1]"
+      "If set, will control the randomness of the response. Value ranging from [0,1]",
     ),
   model_high_priority: z
     .boolean()
     .optional()
     .describe(
-      "If set to true, will use high priority pool with more dedicated resource"
+      "If set to true, will use high priority pool with more dedicated resource",
     ),
   tool_call_strict_mode: z
     .boolean()
     .optional()
     .describe(
-      "Only applicable when model is gpt-4o or gpt-4o mini. If set to true, will use structured output"
+      "Only applicable when model is gpt-4o or gpt-4o mini. If set to true, will use structured output",
     ),
   general_prompt: z.string().describe(
     // "General prompt appended to system prompt no matter what state the agent is in"
-    "Prompt for the agent to follow"
+    "Prompt for the agent to follow",
   ),
   general_tools: z
     .array(
@@ -567,7 +567,7 @@ export const CreateRetellLLMInputSchema = z.object({
           speak_during_execution: z.boolean(),
           url: z.string(),
         }),
-      ])
+      ]),
     )
     .optional()
     .describe("A list of tools the model may call"),
@@ -588,7 +588,7 @@ export const CreateRetellLLMInputSchema = z.object({
                   required: z.array(z.string()),
                 })
                 .optional(),
-            })
+            }),
           )
           .optional(),
         tools: z
@@ -646,10 +646,10 @@ export const CreateRetellLLMInputSchema = z.object({
                 speak_during_execution: z.boolean(),
                 url: z.string(),
               }),
-            ])
+            ]),
           )
           .optional(),
-      })
+      }),
     )
     .optional()
     .describe("States of the LLM"),
@@ -665,7 +665,7 @@ export const CreateRetellLLMInputSchema = z.object({
     .record(z.string())
     .optional()
     .describe(
-      "Default dynamic variables represented as key-value pairs of strings"
+      "Default dynamic variables represented as key-value pairs of strings",
     ),
   knowledge_base_ids: z
     .array(z.string())
@@ -704,7 +704,7 @@ export const UpdateRetellLLMInputSchema = z.object({
         type: z.string(),
         name: z.string(),
         description: z.string(),
-      })
+      }),
     )
     .optional(),
   // states: z
@@ -762,7 +762,7 @@ export const RetellLLMOutputSchema = z.object({
         type: z.string(),
         name: z.string(),
         description: z.string(),
-      })
+      }),
     )
     .nullable()
     .optional(),

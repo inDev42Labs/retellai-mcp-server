@@ -1,5 +1,5 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import Retell from "retell-sdk";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type Retell from "retell-sdk";
 
 import {
   CreateAgentInputSchema,
@@ -21,7 +21,7 @@ export const registerAgentTools = (server: McpServer, retellClient: Retell) => {
     createToolHandler(async () => {
       const agents = await retellClient.agent.list();
       return agents.map(transformAgentOutput);
-    })
+    }),
   );
 
   server.tool(
@@ -32,7 +32,7 @@ export const registerAgentTools = (server: McpServer, retellClient: Retell) => {
       const createAgentDto = transformAgentInput(data);
       const agent = await retellClient.agent.create(createAgentDto);
       return transformAgentOutput(agent);
-    })
+    }),
   );
 
   server.tool(
@@ -50,7 +50,7 @@ export const registerAgentTools = (server: McpServer, retellClient: Retell) => {
         console.error(`Error getting agent: ${error.message}`);
         throw error;
       }
-    })
+    }),
   );
 
   server.tool(
@@ -67,7 +67,7 @@ export const registerAgentTools = (server: McpServer, retellClient: Retell) => {
         // Update the agent
         const updatedAgent = await retellClient.agent.update(
           agentId,
-          updateAgentDto
+          updateAgentDto,
         );
 
         return transformAgentOutput(updatedAgent);
@@ -75,7 +75,7 @@ export const registerAgentTools = (server: McpServer, retellClient: Retell) => {
         console.error(`Error updating agent: ${error.message}`);
         throw error;
       }
-    })
+    }),
   );
 
   server.tool(
@@ -93,7 +93,7 @@ export const registerAgentTools = (server: McpServer, retellClient: Retell) => {
         console.error(`Error deleting agent: ${error.message}`);
         throw error;
       }
-    })
+    }),
   );
 
   server.tool(
@@ -108,6 +108,6 @@ export const registerAgentTools = (server: McpServer, retellClient: Retell) => {
         console.error(`Error getting agent versions: ${error.message}`);
         throw error;
       }
-    })
+    }),
   );
 };

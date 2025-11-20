@@ -1,25 +1,24 @@
-import { z } from "zod";
-import {
-  CreatePhoneCallInputSchema,
-  CreateWebCallInputSchema,
-  CallOutputSchema,
+import type { z } from "zod";
+import type {
   AgentOutputSchema,
-  PhoneNumberOutputSchema,
-  VoiceOutputSchema,
-  KnowledgeBaseOutputSchema,
   CreateAgentInputSchema,
-  UpdateAgentInputSchema,
+  CreatePhoneCallInputSchema,
   CreateRetellLLMInputSchema,
-  UpdateRetellLLMInputSchema,
-  RetellLLMOutputSchema,
+  CreateWebCallInputSchema,
+  KnowledgeBaseOutputSchema,
   ListCallsInputSchema,
+  PhoneNumberOutputSchema,
+  RetellLLMOutputSchema,
+  UpdateAgentInputSchema,
   UpdateCallInputSchema,
+  UpdateRetellLLMInputSchema,
+  VoiceOutputSchema,
 } from "../schemas/index";
 
 // ===== Call Transformers =====
 
 export const transformPhoneCallInput = (
-  input: z.infer<typeof CreatePhoneCallInputSchema>
+  input: z.infer<typeof CreatePhoneCallInputSchema>,
 ) => {
   return {
     from_number: input.fromNumber,
@@ -35,7 +34,7 @@ export const transformPhoneCallInput = (
 };
 
 export const transformWebCallInput = (
-  input: z.infer<typeof CreateWebCallInputSchema>
+  input: z.infer<typeof CreateWebCallInputSchema>,
 ) => {
   return {
     agent_id: input.agentId,
@@ -65,7 +64,7 @@ export const transformCallOutput = (data: any) => {
 };
 
 export const transformListCallsInput = (
-  data: z.infer<typeof ListCallsInputSchema>
+  data: z.infer<typeof ListCallsInputSchema>,
 ) => {
   return {
     agent_id: data.agentId,
@@ -77,7 +76,7 @@ export const transformListCallsInput = (
 };
 
 export const transformUpdateCallInput = (
-  data: z.infer<typeof UpdateCallInputSchema>
+  data: z.infer<typeof UpdateCallInputSchema>,
 ) => {
   return {
     metadata: data.metadata,
@@ -88,7 +87,7 @@ export const transformUpdateCallInput = (
 // ===== Agent Transformers =====
 
 export function transformAgentInput(
-  input: z.infer<typeof CreateAgentInputSchema>
+  input: z.infer<typeof CreateAgentInputSchema>,
 ) {
   return {
     response_engine: input.response_engine,
@@ -130,7 +129,7 @@ export function transformAgentInput(
 }
 
 export function transformUpdateAgentInput(
-  input: z.infer<typeof UpdateAgentInputSchema>
+  input: z.infer<typeof UpdateAgentInputSchema>,
 ) {
   const updateData: any = {};
 
@@ -207,7 +206,7 @@ export function transformUpdateAgentInput(
 }
 
 export function transformAgentOutput(
-  agent: any
+  agent: any,
 ): z.infer<typeof AgentOutputSchema> {
   return {
     agent_id: agent.agent_id,
@@ -254,7 +253,7 @@ export function transformAgentOutput(
 // ===== Phone Number Transformers =====
 
 export function transformPhoneNumberOutput(
-  phoneNumber: any
+  phoneNumber: any,
 ): z.infer<typeof PhoneNumberOutputSchema> {
   return {
     phone_number: phoneNumber.phone_number,
@@ -272,7 +271,7 @@ export function transformPhoneNumberOutput(
 // ===== Voice Transformers =====
 
 export function transformVoiceOutput(
-  voice: any
+  voice: any,
 ): z.infer<typeof VoiceOutputSchema> {
   return {
     voice_id: voice.voice_id,
@@ -287,7 +286,7 @@ export function transformVoiceOutput(
 // ===== Knowledge Base Transformers =====
 
 export function transformKnowledgeBaseOutput(
-  kb: any
+  kb: any,
 ): z.infer<typeof KnowledgeBaseOutputSchema> {
   return {
     knowledge_base_id: kb.knowledge_base_id,
@@ -302,7 +301,7 @@ export function transformKnowledgeBaseOutput(
 // ===== Retell LLM Transformers =====
 
 export function transformRetellLLMInput(
-  input: z.infer<typeof CreateRetellLLMInputSchema>
+  input: z.infer<typeof CreateRetellLLMInputSchema>,
 ) {
   return {
     // version: input.version,
@@ -322,7 +321,7 @@ export function transformRetellLLMInput(
 }
 
 export function transformUpdateRetellLLMInput(
-  input: z.infer<typeof UpdateRetellLLMInputSchema>
+  input: z.infer<typeof UpdateRetellLLMInputSchema>,
 ) {
   const updateData: any = {};
 
@@ -353,7 +352,7 @@ export function transformUpdateRetellLLMInput(
 }
 
 export function transformRetellLLMOutput(
-  llm: any
+  llm: any,
 ): z.infer<typeof RetellLLMOutputSchema> {
   return {
     llm_id: llm.llm_id,

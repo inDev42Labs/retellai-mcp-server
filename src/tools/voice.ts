@@ -1,5 +1,5 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import Retell from "retell-sdk";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type Retell from "retell-sdk";
 
 import { GetVoiceInputSchema } from "../schemas/index";
 import { transformVoiceOutput } from "../transformers/index";
@@ -13,7 +13,7 @@ export const registerVoiceTools = (server: McpServer, retellClient: Retell) => {
     createToolHandler(async () => {
       const voices = await retellClient.voice.list();
       return voices.map(transformVoiceOutput);
-    })
+    }),
   );
 
   server.tool(
@@ -23,6 +23,6 @@ export const registerVoiceTools = (server: McpServer, retellClient: Retell) => {
     createToolHandler(async (data) => {
       const voice = await retellClient.voice.retrieve(data.voiceId);
       return transformVoiceOutput(voice);
-    })
+    }),
   );
 };
